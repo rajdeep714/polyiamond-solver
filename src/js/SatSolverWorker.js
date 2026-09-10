@@ -3,8 +3,8 @@
 import solveSat from 'boolean-sat';
 import parseSexp from 's-expression';
 import { solve as solveExactCover } from 'dlxlib';
-import PolyominoProblem from './PolyominoProblem';
-import { Polyomino } from './Polyomino';
+import PolyiamondProblem from './PolyiamondProblem.js';
+import { Polyiamond } from './Polyiamond.js';
 
 self.z3Ready = false;
 self.z3SolverOutputLines = [];
@@ -30,9 +30,9 @@ self.onmessage = function(event) {
     }
 
     let { type, problem } = event.data;
-    let polyProblem = new PolyominoProblem(
-        problem.pieces.map(coords => new Polyomino(coords)),
-        new Polyomino(problem.region),
+    let polyProblem = new PolyiamondProblem(
+        problem.pieces.map(coords => new Polyiamond(coords)),
+        new Polyiamond(problem.region),
         problem.allowRotation,
         problem.allowReflection
     );
@@ -52,7 +52,9 @@ self.onmessage = function(event) {
 
         let { numVars, clauseList } = convertedProblem;
         let satSolution = solveSat(numVars, clauseList);
-        let solution = satSolution == false ? null : [ polyProblem.region, ...interpreter(satSolution) ];
+        let solution = satSolution == false
+            ? null
+            : [ polyProblem.region, ...interpreter(satSolution) ];
 
         self.postMessage({ 
             solution,

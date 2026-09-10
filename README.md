@@ -1,40 +1,50 @@
-# Polyomino Solver
+# Polyiamond Solver
 
-Try it [here](https://cemulate.github.io/polyomino-solver).
+Build polyiamonds and an arbitrary destination region on a hexagon-shaped
+triangular grid, then find a non-overlapping packing of all the pieces.
 
-Construct a collection of standard and/or completely custom polyominos, and an arbitrary region to fit them in, and this web app will find and display a valid tiling that places all of the polyominos in the region (if it exists).
+Try it online at
+[rajdeep714.github.io/polyiamond-solver](https://rajdeep714.github.io/polyiamond-solver/).
 
-Uses [web-component-polyomino](https://github.com/cemulate/web-component-polyomino) for building, manipulating, and displaying polyominos.
+The editor includes the twelve free hexiamonds as presets. Pieces may be
+rotated in 60-degree increments and, when enabled, reflected. The destination
+region does not have to be completely covered: unused triangles are allowed.
 
-# How it works
+## Develop locally
 
-### Algorithm X
+```sh
+npm install
+npm run serve
+```
 
-Knuth's "Algorithm X" (implemented with "Dancing Links") is the best algorithm to handle this problem, by reducing it to an [Exact Cover Problem](https://en.wikipedia.org/wiki/Exact_cover).
-The details are explained by Knuth himself in [his paper](https://arxiv.org/abs/cs/0011047).
-I use [dlxlib](https://github.com/taylorjg/dlxlibjs/blob/master/src/dlx.js) as an implementation of Dancing Links, courtesy of [taylorgj](https://github.com/taylorjg).
-Though the name suggests otherwise, this method can find inexact solutions as well, by adding single-block placeholder pieces to the exact cover problem.
+Run the automated geometry tests and production build with:
 
-### Legacy methods
+```sh
+npm test
+npm run build
+```
 
-The other two solving methods are much less efficient, and were the solutions I first implemented a long time ago.
+## Coordinate model
 
-#### Converstion to SAT
+Each unit triangle is stored as `[x, y, orientation]`. The first two values are
+integer coordinates on the triangular lattice; `orientation` is `0` for an
+upward triangle and `1` for a downward triangle. Keeping the orientation
+explicit makes all integer lattice translations valid and lets rotations and
+reflections stay exact without floating-point geometry.
 
-It's known that for arbitrary grids and arbitrary sets of [polyominos](https://en.wikipedia.org/wiki/Polyomino), the problem of deciding whether or not the polyominos can fit together on the grid is an [NP-Complete](https://en.wikipedia.org/wiki/NP-completeness) problem. Being NP-Complete, we can convert a tiling problem into an instance of a [Boolean Satisfiability Problem](https://en.wikipedia.org/wiki/Boolean_satisfiability_problem), for which efficient solvers exist.
+A hexagonal editor with side length `n` contains `6n²` unit triangles. The UI
+caps the side length at 20 to keep the number of interactive SVG cells bounded.
 
-Tiling problems can be converted to SAT by introducing a boolean variable for each configuration that each piece could possibly exist in, and then adding clauses that state that a piece must exist in exactly one configuration, and no configurations can overlap.
+## How it works
 
-#### Javascript SAT Solver
+The default solver reduces the packing problem to
+[exact cover](https://en.wikipedia.org/wiki/Exact_cover) and uses Knuth's
+[Algorithm X](https://arxiv.org/abs/cs/0011047), implemented by
+[dlxlib](https://github.com/taylorjg/dlxlibjs). Single-triangle filler pieces
+represent unused cells when the selected pieces cover less area than the
+destination region.
 
-The problem is converted to a [CNF](https://en.wikipedia.org/wiki/Conjunctive_normal_form) file (a common input format for SAT solvers).
-After that, [boolean-sat](https://www.npmjs.com/package/boolean-sat) is applied to solve the problem.
-This is Javascript SAT solver based on my [forked repo](https://github.com/cemulate/SAT.js) of the original code written by Gregory Duck of at University of Singapore.
-This is probably the least efficient method.
-Since the SAT problem must be specified in CNF, even the input file can get very large very quickly.
-
-#### Z3 Webassembly
-
-This was born out of an attempt to make the preceding method faster.
-Here, we convert the problem to [SMT](http://smtlib.cs.uiowa.edu/) format, and use the [Webassembly build](https://github.com/cpitclaudel/z3.wasm) of Microsoft Research's [Z3 Theorem Prover](https://github.com/Z3Prover/z3).
-Generally speaking, this is a tool that can check the satisfiability of first-order logic statements over arbitrary theories, but we only utilize it for the predicate logic subset.
+Two legacy backends also reduce the same generated placements to Boolean
+satisfiability problems. One uses
+[boolean-sat](https://www.npmjs.com/package/boolean-sat); the other uses a
+WebAssembly build of [Z3](https://github.com/Z3Prover/z3).
