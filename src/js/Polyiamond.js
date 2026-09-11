@@ -48,7 +48,8 @@ const reflectPoint = ([x, y]) => [x + y, -y];
 const transformCoordinate = (coordinate, transformPoint) =>
     coordinateFromVertices(getVertices(coordinate).map(transformPoint));
 
-const adjacentCoordinates = ([x, y, orientation]) => orientation === UP
+export const getAdjacentCoordinates = ([x, y, orientation]) =>
+    orientation === UP
     ? [ [x, y, DOWN], [x, y - 1, DOWN], [x - 1, y, DOWN] ]
     : [ [x, y, UP], [x, y + 1, UP], [x + 1, y, UP] ];
 
@@ -220,7 +221,7 @@ function generateFreePolyiamonds(size) {
             const occupied = new Set(shape.coords.map(coordinateKey));
 
             for (const coordinate of shape.coords) {
-                for (const adjacent of adjacentCoordinates(coordinate)) {
+                for (const adjacent of getAdjacentCoordinates(coordinate)) {
                     if (occupied.has(coordinateKey(adjacent))) continue;
 
                     const candidate = new Polyiamond([

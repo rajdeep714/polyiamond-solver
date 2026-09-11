@@ -4,6 +4,7 @@
         MAX_HEXAGON_SIDE_LENGTH,
         UP,
     } from './js/Polyiamond.js';
+    import { computeColoring } from './js/PolyiamondColoring.js';
 
     export let value = [];
     export let sideLength = 3;
@@ -70,14 +71,19 @@
         const fills = new Map();
 
         if (currentMode === 'display-multiple') {
-            currentValue.forEach((coordinates, index) => {
+            const [regionCoordinates = [], ...polyiamonds] = currentValue;
+            regionCoordinates.forEach(coordinate => fills.set(
+                coordinateKey(coordinate),
+                '#ffffff',
+            ));
+
+            const coloring = computeColoring(polyiamonds);
+            polyiamonds.forEach((coordinates, index) => {
                 coordinates.forEach(coordinate => fills.set(
                     coordinateKey(coordinate),
-                    index === 0
-                        ? '#ffffff'
-                        : solutionColors[
-                            (index - 1) % solutionColors.length
-                        ],
+                    solutionColors[
+                        coloring.get(index) % solutionColors.length
+                    ],
                 ));
             });
         } else {

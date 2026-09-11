@@ -4,6 +4,7 @@ import { solve as solveExactCover } from 'dlxlib';
 
 import {
     DOWN,
+    getAdjacentCoordinates,
     getHexagonCoordinates,
     hexiamonds,
     isTriangleCoordinate,
@@ -15,17 +16,13 @@ import PolyiamondProblem from '../src/js/PolyiamondProblem.js';
 
 const key = coordinate => coordinate.join(',');
 
-const adjacentCoordinates = ([x, y, orientation]) => orientation === UP
-    ? [ [x, y, DOWN], [x, y - 1, DOWN], [x - 1, y, DOWN] ]
-    : [ [x, y, UP], [x, y + 1, UP], [x + 1, y, UP] ];
-
 function isConnected(polyiamond) {
     const remaining = new Set(polyiamond.coords.map(key));
     const pending = [polyiamond.coords[0]];
     remaining.delete(key(pending[0]));
 
     while (pending.length > 0) {
-        for (const adjacent of adjacentCoordinates(pending.pop())) {
+        for (const adjacent of getAdjacentCoordinates(pending.pop())) {
             if (remaining.delete(key(adjacent))) pending.push(adjacent);
         }
     }
