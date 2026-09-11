@@ -211,6 +211,9 @@
         height: auto;
         overflow: visible;
         touch-action: none;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-user-select: none;
+        user-select: none;
     }
 
     .cell {
@@ -226,6 +229,9 @@
 
     .editable .cell:focus {
         outline: none;
+    }
+
+    .editable .cell:focus-visible {
         stroke: #1261a0;
         stroke-width: 4;
     }
