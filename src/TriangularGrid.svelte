@@ -126,14 +126,23 @@
         if (!isEditable || activePointerId !== null) return;
         event.preventDefault();
 
+        const target = event.currentTarget;
         activePointerId = event.pointerId;
         paintValue = !isSelected(coordinate);
         setCoordinate(coordinate, paintValue);
 
         // Touch pointers are implicitly captured by the first cell on Android.
         // Releasing capture lets pointerenter follow the finger across cells.
-        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-            event.currentTarget.releasePointerCapture(event.pointerId);
+        if (target.hasPointerCapture(event.pointerId)) {
+            target.releasePointerCapture(event.pointerId);
+        }
+
+        // Android may focus an SVG polygon after the pointer event finishes.
+        // Clear touch-created focus without affecting keyboard navigation.
+        if (event.pointerType !== 'mouse' &&
+            typeof target.blur === 'function') {
+            target.blur();
+            setTimeout(() => target.blur(), 0);
         }
     }
 
@@ -221,6 +230,9 @@
         stroke-width: 1.5;
         stroke-linejoin: round;
         vector-effect: non-scaling-stroke;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-user-select: none;
+        user-select: none;
     }
 
     .editable .cell {
