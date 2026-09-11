@@ -105,36 +105,56 @@
         : getHexagonViewBox(safeSideLength);
 
     let paintValue = null;
+    let activePointerId = null;
+
+    function isSelected(coordinate) {
+        const key = coordinateKey(coordinate);
+        return value.some(candidate => coordinateKey(candidate) === key);
+    }
 
     function setCoordinate(coordinate, selected) {
-        const key = coordinateKey(coordinate);
-        const alreadySelected = value.some(candidate =>
-            coordinateKey(candidate) === key);
+        const alreadySelected = isSelected(coordinate);
         if (selected === alreadySelected) return;
 
+        const key = coordinateKey(coordinate);
         value = selected
             ? [...value, [...coordinate]]
             : value.filter(candidate => coordinateKey(candidate) !== key);
     }
 
     function startPainting(event, coordinate) {
-        if (!isEditable) return;
-        const key = coordinateKey(coordinate);
-        paintValue = !value.some(candidate =>
-            coordinateKey(candidate) === key);
-        setCoordinate(coordinate, paintValue);
+        if (!isEditable || activePointerId !== null) return;
         event.preventDefault();
+
+        activePointerId = event.pointerId;
+        paintValue = !isSelected(coordinate);
+        setCoordinate(coordinate, paintValue);
+
+        // Touch pointers are implicitly captured by the first cell on Android.
+        // Releasing capture lets pointerenter follow the finger across cells.
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+            event.currentTarget.releasePointerCapture(event.pointerId);
+        }
     }
 
     function continuePainting(event, coordinate) {
-        if (!isEditable || paintValue === null || event.buttons !== 1) return;
+        if (!isEditable || paintValue === null ||
+            event.pointerId !== activePointerId) return;
+        event.preventDefault();
         setCoordinate(coordinate, paintValue);
+    }
+
+    function stopPainting(event) {
+        if (activePointerId === null ||
+            event.pointerId !== activePointerId) return;
+        paintValue = null;
+        activePointerId = null;
     }
 
     function handleKeydown(event, coordinate) {
         if (event.key !== 'Enter' && event.key !== ' ') return;
-        startPainting(event, coordinate);
-        paintValue = null;
+        event.preventDefault();
+        setCoordinate(coordinate, !isSelected(coordinate));
     }
 
     function fillFor(coordinate) {
@@ -144,8 +164,8 @@
 </script>
 
 <svelte:window
-    on:pointerup={() => paintValue = null}
-    on:pointercancel={() => paintValue = null}
+    on:pointerup={stopPainting}
+    on:pointercancel={stopPainting}
 />
 
 <svg
