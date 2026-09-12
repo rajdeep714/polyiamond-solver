@@ -7,9 +7,12 @@
         isTriangleCoordinate,
         MAX_HEXAGON_SIDE_LENGTH,
         Polyiamond,
-        polyiamondsUpToSizeSix,
     } from './js/Polyiamond.js';
-    import { packingPresets } from './js/PolyiamondPackingPresets.js';
+    import {
+        getPackingPresetPieceLabel,
+        getPackingPresetPieces,
+        packingPresets,
+    } from './js/PolyiamondPackingPresets.js';
     import SatSolverWorker from 'worker-loader!./js/SatSolverWorker.js';
 
     const STORAGE_KEY = 'polyiamond-solver-state';
@@ -144,8 +147,7 @@
         if (workerBusy) return;
 
         currentProblem = {};
-        polyiamonds = polyiamondsUpToSizeSix.map(polyiamond =>
-            polyiamond.clone().coords);
+        polyiamonds = getPackingPresetPieces(preset).map(piece => piece.coords);
         regionSideLength = preset.sideLength;
         regionCoords = preset.regionCoords.map(coordinate => [...coordinate]);
         settings = {
@@ -325,6 +327,10 @@
                 class="tabs-panel"
                 class:is-active={selectedTab === 'pattern'}
             >
+                <p><small>
+                    Select a pattern, then press Solve. Any omitted piece is
+                    left out whole; the remaining pieces exactly fill the shape.
+                </small></p>
                 {#each packingPresets as preset}
                     <button
                         class="button hollow expanded packing-preset-button"
@@ -343,6 +349,10 @@
                         <span class="packing-preset-label">
                             <strong>{preset.name}</strong>
                             <small>{preset.description}</small>
+                            <small>
+                                {getPackingPresetPieceLabel(preset)} ·
+                                {preset.regionCoords.length} triangles
+                            </small>
                         </span>
                     </button>
                 {/each}

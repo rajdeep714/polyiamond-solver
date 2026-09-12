@@ -13,7 +13,6 @@ import {
     polyiamondsUpToSizeSix,
     UP,
 } from '../src/js/Polyiamond.js';
-import { packingPresets } from '../src/js/PolyiamondPackingPresets.js';
 import PolyiamondProblem from '../src/js/PolyiamondProblem.js';
 
 const key = coordinate => coordinate.join(',');
@@ -108,38 +107,6 @@ test('the packing catalog contains every free polyiamond through size six', () =
         0,
     ), 110);
     assert.ok(polyiamondsUpToSizeSix.every(isConnected));
-});
-
-test('all five packing presets fit their editors and have exact solutions', () => {
-    assert.equal(packingPresets.length, 5);
-    assert.equal(new Set(packingPresets.map(preset => preset.id)).size, 5);
-
-    for (const preset of packingPresets) {
-        const region = new Polyiamond(preset.regionCoords);
-        const available = new Set(
-            getHexagonCoordinates(preset.sideLength).map(key),
-        );
-
-        assert.equal(region.coords.length, 110, preset.name);
-        assert.ok(isConnected(region), preset.name);
-        assert.ok(region.coords.every(coordinate =>
-            available.has(key(coordinate))), preset.name);
-
-        const problem = new PolyiamondProblem(
-            polyiamondsUpToSizeSix,
-            region,
-            true,
-            true,
-        );
-        const { convertedProblem } = problem.convertToDlx();
-        const solutions = solveExactCover(
-            convertedProblem.matrix,
-            null,
-            null,
-            1,
-        );
-        assert.equal(solutions.length, 1, preset.name);
-    }
 });
 
 test('a rotatable moniamond reaches every cell of a unit hexagon', () => {

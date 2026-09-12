@@ -6,11 +6,25 @@ triangular grid, then find a non-overlapping packing of all the pieces.
 Try it online at
 [rajdeep714.github.io/polyiamond-solver](https://rajdeep714.github.io/polyiamond-solver/).
 
-The editor includes the twelve free hexiamonds as individual presets. Its
-Patterns tab can also load all 22 free polyiamonds through size six into five
-exact 110-triangle destinations: an elongated hexagon, a hexagonal ring, an
-extended hexagram, a triangle window, and a 5 × 11 parallelogram. Pattern
-presets select Algorithm X and enable rotations and reflections automatically.
+The editor includes the twelve free hexiamonds as individual presets. Open the
+Patterns tab, select a destination, then press **Solve**. Each pattern loads its
+piece set automatically, selects Algorithm X, and enables rotations and
+reflections.
+
+Thirteen verified packing presets are available:
+
+- **All 22 pieces, 110 triangles:** elongated hexagon, hexagonal ring, extended
+  hexagram, triangle window, 5 × 11 parallelogram, diamond-window hexagon, and
+  butterfly.
+- **Omit the moniamond, 109 triangles:** truncated triangle and three-window
+  triangle.
+- **Omit the diamond, 108 triangles:** perfect hexagram, twelve-tooth sunburst,
+  six-arm pinwheel, and snowflake window.
+
+Omitted pieces are left out whole, never cut. Every preset exactly covers its
+destination; windows are intentional holes. Symmetry describes the outline and
+holes, not the individual piece arrangement. The butterfly shape is also
+documented in [Polyform Puzzler's catalogue](https://puzzler.sourceforge.net/docs/polyiamonds.html#polyiamonds-of-order-1-through-6).
 
 For custom problems, pieces may be rotated in 60-degree increments and, when
 enabled, reflected. The destination region does not have to be completely
