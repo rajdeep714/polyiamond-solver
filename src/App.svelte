@@ -7,7 +7,9 @@
         isTriangleCoordinate,
         MAX_HEXAGON_SIDE_LENGTH,
         Polyiamond,
+        polyiamondsUpToSizeSix,
     } from './js/Polyiamond.js';
+    import { packingPresets } from './js/PolyiamondPackingPresets.js';
     import SatSolverWorker from 'worker-loader!./js/SatSolverWorker.js';
 
     const STORAGE_KEY = 'polyiamond-solver-state';
@@ -138,6 +140,21 @@
         polyiamonds = [...polyiamonds, polyiamond.coords];
     }
 
+    function loadPackingPreset(preset) {
+        if (workerBusy) return;
+
+        currentProblem = {};
+        polyiamonds = polyiamondsUpToSizeSix.map(polyiamond =>
+            polyiamond.clone().coords);
+        regionSideLength = preset.sideLength;
+        regionCoords = preset.regionCoords.map(coordinate => [...coordinate]);
+        settings = {
+            method: 'method-dlx',
+            allowRotation: true,
+            allowReflection: true,
+        };
+    }
+
     function handleWorkerMessage(event) {
         if (event.data === 'z3Loaded') {
             workerBusy = false;
@@ -225,6 +242,17 @@
                     on:click|preventDefault={() => selectedTab = 'hexiamond'}
                 >Hexiamonds</a>
             </li>
+            <li
+                class="tabs-title flex-child-auto"
+                class:is-active={selectedTab === 'pattern'}
+            >
+                <a
+                    href="#tab-pattern"
+                    role="tab"
+                    aria-selected={selectedTab === 'pattern'}
+                    on:click|preventDefault={() => selectedTab = 'pattern'}
+                >Patterns</a>
+            </li>
         </ul>
 
         <div class="tabs-content">
@@ -290,6 +318,32 @@
                             value={hexiamond.coords}
                             ariaLabel={`Hexiamond ${index + 1}`}
                         />
+                    </button>
+                {/each}
+            </div>
+            <div
+                class="tabs-panel"
+                class:is-active={selectedTab === 'pattern'}
+            >
+                {#each packingPresets as preset}
+                    <button
+                        class="button hollow expanded packing-preset-button"
+                        aria-label={`Load ${preset.name} packing preset`}
+                        disabled={workerBusy}
+                        class:disabled={workerBusy}
+                        on:click={() => loadPackingPreset(preset)}
+                    >
+                        <span class="packing-preset-preview">
+                            <TriangularGrid
+                                mode="display"
+                                value={preset.regionCoords}
+                                ariaLabel={`${preset.name} destination preview`}
+                            />
+                        </span>
+                        <span class="packing-preset-label">
+                            <strong>{preset.name}</strong>
+                            <small>{preset.description}</small>
+                        </span>
                     </button>
                 {/each}
             </div>
@@ -506,6 +560,30 @@
 
     .piece-list {
         min-height: 90px;
+    }
+
+    .packing-preset-button {
+        display: grid !important;
+        grid-template-columns: 56px minmax(0, 1fr);
+        gap: 12px;
+        align-items: center;
+        padding: 8px 12px;
+        text-align: left;
+        text-transform: none;
+        --cell-color: lightgreen;
+    }
+
+    .packing-preset-preview {
+        display: flex;
+        width: 56px;
+        height: 56px;
+        align-items: center;
+    }
+
+    .packing-preset-label,
+    .packing-preset-label strong,
+    .packing-preset-label small {
+        display: block;
     }
 
     .legacy-method {

@@ -6,9 +6,15 @@ triangular grid, then find a non-overlapping packing of all the pieces.
 Try it online at
 [rajdeep714.github.io/polyiamond-solver](https://rajdeep714.github.io/polyiamond-solver/).
 
-The editor includes the twelve free hexiamonds as presets. Pieces may be
-rotated in 60-degree increments and, when enabled, reflected. The destination
-region does not have to be completely covered: unused triangles are allowed.
+The editor includes the twelve free hexiamonds as individual presets. Its
+Patterns tab can also load all 22 free polyiamonds through size six into five
+exact 110-triangle destinations: an elongated hexagon, a hexagonal ring, an
+extended hexagram, a triangle window, and a 5 × 11 parallelogram. Pattern
+presets select Algorithm X and enable rotations and reflections automatically.
+
+For custom problems, pieces may be rotated in 60-degree increments and, when
+enabled, reflected. The destination region does not have to be completely
+covered: unused triangles are allowed.
 
 ## Develop locally
 

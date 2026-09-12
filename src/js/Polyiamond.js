@@ -211,13 +211,13 @@ export class Polyiamond {
     }
 }
 
-function generateFreePolyiamonds(size) {
-    let shapes = [new Polyiamond([[0, 0, UP]])];
+function generateFreePolyiamondOrders(maximumSize) {
+    const orders = [[new Polyiamond([[0, 0, UP]])]];
 
-    for (let currentSize = 1; currentSize < size; currentSize++) {
+    for (let currentSize = 1; currentSize < maximumSize; currentSize++) {
         const nextShapes = new Map();
 
-        for (const shape of shapes) {
+        for (const shape of orders.at(-1)) {
             const occupied = new Set(shape.coords.map(coordinateKey));
 
             for (const coordinate of shape.coords) {
@@ -234,13 +234,15 @@ function generateFreePolyiamonds(size) {
             }
         }
 
-        shapes = [...nextShapes.values()];
+        orders.push([...nextShapes.values()].sort((first, second) =>
+            normalizedKey(first).localeCompare(normalizedKey(second))));
     }
 
-    return shapes.sort((first, second) =>
-        normalizedKey(first).localeCompare(normalizedKey(second)));
+    return orders;
 }
 
-// There are twelve free hexiamonds. Generate them from lattice adjacency so
-// the presets use exactly the same geometry and symmetry rules as the solver.
-export const hexiamonds = generateFreePolyiamonds(6);
+// Generate the complete free catalog once so both the individual hexiamond
+// buttons and the order-1-through-6 packing presets share the same pieces.
+const freePolyiamondOrders = generateFreePolyiamondOrders(6);
+export const polyiamondsUpToSizeSix = freePolyiamondOrders.flat();
+export const hexiamonds = freePolyiamondOrders[5];
