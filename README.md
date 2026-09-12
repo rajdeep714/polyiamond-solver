@@ -11,10 +11,10 @@ Patterns tab, select a destination, then press **Solve**. Each pattern loads its
 piece set automatically, selects Algorithm X, and enables rotations and
 reflections.
 
-Thirteen verified packing presets are available:
+Twelve verified packing presets are available:
 
-- **All 22 pieces, 110 triangles:** elongated hexagon, hexagonal ring, extended
-  hexagram, triangle window, 5 × 11 parallelogram, diamond-window hexagon, and
+- **All 22 pieces, 110 triangles:** elongated hexagon, hexagonal ring,
+  triangle window, 5 × 11 parallelogram, diamond-window hexagon, and
   butterfly.
 - **Omit the moniamond, 109 triangles:** truncated triangle and three-window
   triangle.

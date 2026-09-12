@@ -1,6 +1,5 @@
 import {
     DOWN,
-    getAdjacentCoordinates,
     getHexagonCoordinates,
     Polyiamond,
     polyiamondsUpToSizeSix,
@@ -144,23 +143,6 @@ function getHexagramCoordinates(sideLength) {
     );
 }
 
-function getExtendedHexagramCoordinates() {
-    const sideLength = 3;
-    const star = getHexagramCoordinates(sideLength);
-    const occupied = new Set(star.map(coordinateKey));
-    const frontier = uniqueCoordinates(...star.map(coordinate =>
-        getAdjacentCoordinates(coordinate).filter(neighbor =>
-            !occupied.has(coordinateKey(neighbor)))));
-    const centroidX = coordinate => vertices(coordinate)
-        .reduce((sum, [x, y]) => sum + x + y / 2, 0) / 3;
-    const first = frontier.reduce((leftmost, candidate) =>
-        centroidX(candidate) < centroidX(leftmost) ? candidate : leftmost);
-    const opposite = coordinateFromVertices(vertices(first).map(([x, y]) =>
-        [2 * sideLength - x, 2 * sideLength - y]));
-
-    return uniqueCoordinates(star, [first, opposite]);
-}
-
 function getTriangleWindowCoordinates() {
     const triangle = getPolygonCoordinates([[0, 0], [11, 0], [0, 11]]);
     const ribbon = Array.from({ length: 5 }, (_, index) => [
@@ -246,13 +228,6 @@ export const packingPresets = [
         description: 'Regular outline with a centered window',
         sideLength: 5,
         regionCoords: getHexagonalRingCoordinates(),
-    },
-    {
-        id: 'extended-hexagram',
-        name: 'Extended hexagram',
-        description: 'Six-point star with elongated tips',
-        sideLength: 6,
-        regionCoords: translate(getExtendedHexagramCoordinates(), 3, 3),
     },
     {
         id: 'triangle-window',

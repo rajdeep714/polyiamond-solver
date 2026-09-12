@@ -19,7 +19,6 @@ import PolyiamondProblem from '../src/js/PolyiamondProblem.js';
 const expectedPresets = [
     ['elongated-hexagon', 0, 2, 2],
     ['hexagonal-ring', 0, 2, 2],
-    ['extended-hexagram', 0, 2, 0],
     ['triangle-window', 0, 1, 1],
     ['parallelogram-5-by-11', 0, 2, 0],
     ['perfect-hexagram', 2, 6, 6],
@@ -54,10 +53,10 @@ function assertConnected(shape) {
     assert.equal(remaining.size, 0);
 }
 
-test('the preset catalog preserves the five originals and adds eight designs', () => {
+test('the preset catalog contains twelve distinct designs', () => {
     assert.deepEqual(packingPresets.map(preset => preset.id),
         expectedPresets.map(([id]) => id));
-    assert.equal(new Set(packingPresets.map(preset => preset.id)).size, 13);
+    assert.equal(new Set(packingPresets.map(preset => preset.id)).size, 12);
 });
 
 for (const [id, omittedSize, rotations, mirrors] of expectedPresets) {
